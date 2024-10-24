@@ -1,6 +1,16 @@
 import pygal
 import lxml
 import requests
+from dotenv import load_dotenv
+import os
+
+
+#Function for setting up a sercure API key
+def APIConfigure():
+    #loads .env file
+    load_dotenv()
+    #sets api_key from .env file
+    api_key = os.getenv("Alpha_API_key")
 
 def validDate(date):
         if len(date) != 10:
