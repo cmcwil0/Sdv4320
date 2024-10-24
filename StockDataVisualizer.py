@@ -1,6 +1,5 @@
-import pygal
-import lxml
 import requests
+from Graphs import bar_graph, line_graph
 from dotenv import load_dotenv
 import os
 
@@ -114,7 +113,13 @@ Enter time series option (1, 2, 3, 4):''')
             break
 
     #Chart opens here
-
+    try:
+        if chartType == '1':
+            bar_graph(stockSymbol, startDate, endDate)
+        elif chartType == '2':
+            bar_graph(stockSymbol, startDate, endDate)
+    except:
+        print("There was an issue opening the graph.\n")
 
     #after chart opens
 
