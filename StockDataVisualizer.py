@@ -1,5 +1,3 @@
-import pygal
-import lxml
 import requests
 
 def validDate(date):
