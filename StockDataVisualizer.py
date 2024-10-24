@@ -10,6 +10,44 @@ def APIConfigure():
     load_dotenv()
     #sets api_key from .env file
     api_key = os.getenv("Alpha_API_key")
+    return api_key
+
+
+#Function for obtaining stock data
+def stock_data(symbol: str, time_series: str) ->dict:
+    #sets api key from .env file
+    api_key = APIConfigure()
+    
+    #sets time series map for selection 1-4
+    time_series_map={
+        "1": "TIME_SERIES_INTRADAY",
+        "2": "TIME_SERIES_DAILY",
+        "3": "TIME_SERIES_WEEKLY",
+        "4": "TIME_SERIES_MONTHLY", 
+    }
+
+    #sets parameters for api calls in the url so that we can keep the API key secure
+    parameters={
+        "function": time_series_map[time_series],
+        "symbol": symbol,
+        "api_key": api_key,
+        "outputsize": "full"
+    }
+
+    #Base url to be modified by parameters
+    url = "https://www.alphavantage.co/query"
+
+    #reponse set equal to request
+    r = requests.get(url, parameters=parameters)
+
+    #data set equal to r.json for proper api calling
+    data = r.json()
+
+    #returns proper data from function
+    return data
+    
+     
+
 
 def validDate(date):
         if len(date) != 10:
