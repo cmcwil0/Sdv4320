@@ -30,7 +30,7 @@ def stock_data(symbol: str, time_series: str) ->dict:
     parameters={
         "function": time_series_map[time_series],
         "symbol": symbol,
-        "api_key": api_key,
+        "apikey": api_key,
         "outputsize": "full"
     }
 
@@ -38,7 +38,7 @@ def stock_data(symbol: str, time_series: str) ->dict:
     url = "https://www.alphavantage.co/query"
 
     #reponse set equal to request
-    r = requests.get(url, parameters=parameters)
+    r = requests.get(url, params=parameters)
 
     #data set equal to r.json for proper api calling
     data = r.json()
@@ -84,6 +84,7 @@ def validDate(date):
                     return False
 
         return True
+
 
 print('-------Stock Data Visualizer-------')
 
@@ -149,6 +150,8 @@ Enter time series option (1, 2, 3, 4):''')
             continue
         else:
             break
+    
+    data = stock_data(stockSymbol, timeSeries)
 
     #Chart opens here
     try:
