@@ -71,11 +71,10 @@ def stock_data(symbol: str, time_series: str, start_date: str, end_date: str) ->
         highs.append(float(values["2. high"]))
         lows.append(float(values["3. low"]))
         closes.append(float(values["4. close"]))
-        return {"dates": dates, "open": opens, "high": highs, "low": lows, "close": closes}
-        
-
     
-     
+    print(data)
+    return {"dates": dates, "open": opens, "high": highs, "low": lows, "close": closes}
+        
 
 
 def validDate(date):
@@ -180,14 +179,16 @@ Enter time series option (1, 2, 3, 4):''')
         else:
             break
     
-    data = stock_data(stockSymbol, timeSeries)
+    data = stock_data(stockSymbol, timeSeries, startDate, endDate)
 
     #Chart opens here
     try:
         if chartType == '1':
-            bar_graph(stockSymbol, startDate, endDate)
+            title = f"Stock Data for {stockSymbol}: {startDate} to {endDate}"
+            bar_graph(title, data['dates'], data['open'], data['high'], data['low'], data['close'])
         elif chartType == '2':
-            bar_graph(stockSymbol, startDate, endDate)
+            title = f"Stock Data for {stockSymbol}: {startDate} to {endDate}"
+            line_graph(title, data['dates'], data['open'], data['high'], data['low'], data['close'])
     except:
         print("There was an issue opening the graph.\n")
 
