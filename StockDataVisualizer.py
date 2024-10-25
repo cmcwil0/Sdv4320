@@ -14,7 +14,7 @@ def APIConfigure():
 
 
 #Function for obtaining stock data
-def stock_data(symbol: str, time_series: str) ->dict:
+def stock_data(symbol: str, time_series: str, start_date: str, end_date: str) ->dict:
     #sets api key from .env file
     api_key = APIConfigure()
     
@@ -44,7 +44,36 @@ def stock_data(symbol: str, time_series: str) ->dict:
     data = r.json()
 
     #returns proper data from function
-    return data
+    if time_series == "1":
+        key = "Time Series (5 mins)"
+    elif time_series == "2":
+        key = "Time Series (Daily)"
+    elif time_series == "3":
+        key = "Weekly Time Series"
+    elif time_series == "4":
+        key = "Monthly Time Series"
+
+    time_series_data = data.get(key,{})
+    filtered_data_dic = {date: values for date, values in time_series_data.items()if start_date <= date <= end_date}
+
+
+    #initalizes the dic to empty 
+    dates = []
+    opens = []
+    highs = []
+    lows = []
+    closes = []
+
+    #fills dic with data from json file
+    for date, values in sorted(filtered_data_dic.items()):
+        dates.append(date)
+        opens.append(float(values["1. open"]))
+        highs.append(float(values["2. high"]))
+        lows.append(float(values["3. low"]))
+        closes.append(float(values["4. close"]))
+        return {"dates": dates, "open": opens, "high": highs, "low": lows, "close": closes}
+        
+
     
      
 
