@@ -34,6 +34,9 @@ def stock_data(symbol: str, time_series: str, start_date: str, end_date: str) ->
         "outputsize": "full"
     }
 
+    if time_series == "1":
+        parameters["interval"] = "5min"
+
     #Base url to be modified by parameters
     url = "https://www.alphavantage.co/query"
 
@@ -54,8 +57,9 @@ def stock_data(symbol: str, time_series: str, start_date: str, end_date: str) ->
         key = "Monthly Time Series"
 
     time_series_data = data.get(key,{})
-    filtered_data_dic = {date: values for date, values in time_series_data.items()if start_date <= date <= end_date}
+    filtered_data_dic = {date: values for date, values in time_series_data.items() if start_date <= date.split(' ')[0] <= end_date}
 
+    #print(filtered_data_dic)
 
     #initalizes the dic to empty 
     dates = []
@@ -66,13 +70,12 @@ def stock_data(symbol: str, time_series: str, start_date: str, end_date: str) ->
 
     #fills dic with data from json file
     for date, values in sorted(filtered_data_dic.items()):
-        dates.append(date)
+        dates.append(date.split(' ')[0])
         opens.append(float(values["1. open"]))
         highs.append(float(values["2. high"]))
         lows.append(float(values["3. low"]))
         closes.append(float(values["4. close"]))
     
-    print(data)
     return {"dates": dates, "open": opens, "high": highs, "low": lows, "close": closes}
         
 

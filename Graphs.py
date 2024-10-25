@@ -1,7 +1,7 @@
 import pygal
 
 def bar_graph(title, dates, open, high, low, close):
-    graph = pygal.Bar()
+    graph = pygal.Bar(x_label_rotation=45)
     graph.title = title
     graph.x_labels = dates
     graph.add('Open', open)
@@ -12,7 +12,7 @@ def bar_graph(title, dates, open, high, low, close):
 
 
 def line_graph(title, dates, open, high, low, close):
-    graph = pygal.Line()
+    graph = pygal.Line(x_label_rotation=45)
     graph.title = title
     graph.x_labels = dates
     graph.add('Open', open)
