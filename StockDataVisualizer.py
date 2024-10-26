@@ -48,7 +48,7 @@ def stock_data(symbol: str, time_series: str, start_date: str, end_date: str) ->
 
     #returns proper data from function
     if time_series == "1":
-        key = "Time Series (5 mins)"
+        key = "Time Series (5mins)"
     elif time_series == "2":
         key = "Time Series (Daily)"
     elif time_series == "3":
