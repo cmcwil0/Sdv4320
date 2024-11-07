@@ -2,7 +2,10 @@ import requests
 from Graphs import bar_graph, line_graph
 from dotenv import load_dotenv
 import os
+from flask import Flask, render_template, request
 
+app = Flask(__name__)
+app.config["DEBUG"] = True
 
 #Function for setting up a sercure API key
 def APIConfigure():
@@ -79,124 +82,31 @@ def stock_data(symbol: str, time_series: str, start_date: str, end_date: str) ->
     return {"dates": dates, "open": opens, "high": highs, "low": lows, "close": closes}
         
 
-
-def validDate(date):
-        if len(date) != 10:
-            return False
-        if date[4] != '-' or date[7] != '-':
-            return False
-        
-        year = date[:4]
-        month = date[5:7]
-        day = date[8:]
-
-        if not (year.isdigit() and month.isdigit() and day.isdigit()):
-            return False
-
-        year = int(year)
-        month = int(month)
-        day = int(day)
-
-        if not (1 <= month <= 12):
-            return False
-
-        if month in [1, 3, 5, 7, 8, 10, 12]:
-            if not (1 <= day <= 31):
-                return False
-        elif month in [4, 6, 9, 11]:
-            if not (1 <= day <= 30):
-                return False
-        elif month == 2:
-            if (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)):
-                if not (1 <= day <= 29):
-                    return False
-            else:
-                if not (1 <= day <= 28):
-                    return False
-
-        return True
-
-
 print('-------Stock Data Visualizer-------')
 
-viewMore = 'y'
-
-while viewMore == 'y':
-    #get stock symbol
-    print('Enter the stock symbol you are looking for: ')
-    stockSymbol = input()
-
-    #get an validate chart type input
-    chartOptions = ['1','2']
-    while True:
-        print('''
-Chart Types
------------
-1. Bar
-2. Line
-    
-Enter the chart type you want (1,2): ''')
-        chartType = input()
-        if chartType not in chartOptions:
-            print("Invalid input for chart type")
-            continue
-        else:
-            break
-
-    #get and validate time series option input
-    timeOptions = ['1','2','3','4']
-    while True:
-        print('''
-Select the Time Series of the chart you want to Generate
---------------------------------------------------------
-1. Intraday
-2. Daily
-3. Weekly
-4. Monthly
-
-Enter time series option (1, 2, 3, 4):''')
-        timeSeries = input()
-        if timeSeries not in timeOptions:
-            print("Invalid input for time series")
-            continue
-        else:
-            break
-
-    #get and validate start and end dates
-    while True:
-        print('Enter the start Date (YYYY-MM-DD): ')
-        startDate = input()
-        if validDate(startDate) is False:
-            print("Invalid input for Start date")
-            continue
-
-        print('Enter the end Date (YYYY-MM-DD): ')
-        endDate = input()
-        if validDate(endDate) is False:
-            print("Invalid input for End date")
-            continue
-
-        if startDate > endDate:
-            print("Invalid input: Start date must be before End date")
-            continue
-        else:
-            break
-    
-    data = stock_data(stockSymbol, timeSeries, startDate, endDate)
-
-    #Chart opens here
-    try:
-        if chartType == '1':
-            title = f"Stock Data for {stockSymbol}: {startDate} to {endDate}"
-            bar_graph(title, data['dates'], data['open'], data['high'], data['low'], data['close'])
-        elif chartType == '2':
-            title = f"Stock Data for {stockSymbol}: {startDate} to {endDate}"
-            line_graph(title, data['dates'], data['open'], data['high'], data['low'], data['close'])
-    except:
-        print("There was an issue opening the graph.\n")
-
-    #after chart opens
-
-    #ask if user would like to continue
-    print('Would you like to view more stock data? Press y to continue:')
-    viewMore = input()
+@app.route('/', methods=["GET", "POST"])
+def index():
+    chart = None
+    if request.method == "POST":
+        #get values from user input
+        stockSymbol = request.form["symbol"]
+        chartType = request.form["chart_type"]
+        timeSeries = request.form["time_series"]
+        startDate = request.form["start_date"]
+        endDate = request.form["end_date"]
+        try:
+            #get the graph for either bar or line graph
+            #data = stock_data(stockSymbol, timeSeries, startDate, endDate)
+            if chartType == '1':
+                title = f"Stock Data for {stockSymbol}: {startDate} to {endDate}"
+                #bar_graph(title, data['dates'], data['open'], data['high'], data['low'], data['close'])
+                chart = title
+            elif chartType == '2':
+                title = f"Stock Data for {stockSymbol}: {startDate} to {endDate}"
+                #line_graph(title, data['dates'], data['open'], data['high'], data['low'], data['close'])
+                chart = title
+        except ValueError as e:
+            chart = None
+            print("Error fetching data:", e)
+    #return index html with the chart
+    return render_template("index.html", chart=chart)
