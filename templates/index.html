@@ -9,10 +9,15 @@
         function validateDates() {
             const startDate = document.getElementById('start_date').value;
             const endDate = document.getElementById('end_date').value;
+            const today = new Date().toISOString().split('T')[0];
 
             if (startDate && endDate) {
                 if (new Date(endDate) < new Date(startDate)) {
                     alert("End date cannot be before start date.");
+                    return false;  // Prevent form submission
+                }
+                if (new Date(endDate) > new Date(today)) {
+                    alert("End date cannot be later than today's date.");
                     return false;  // Prevent form submission
                 }
             }
@@ -24,7 +29,11 @@
     <h1>Stock Data Visualizer</h1>
     <form method="post" onsubmit="return validateDates()">
         <label for="symbol">Stock Symbol:</label>
-        <input type="text" id="symbol" name="symbol" required>
+        <select id="symbol" name="symbol" required>
+            {% for company in companies %}
+                <option value="{{ company.symbol }}">{{ company.symbol }} - {{ company.name }}</option>
+            {% endfor %}
+        </select>
 
         <label for="chart_type">Chart Type:</label>
         <select id="chart_type" name="chart_type" required>
@@ -51,8 +60,7 @@
 
     {% if chart %}
     <h2>Chart:</h2>
-    <!--<img src="data:image/png;base64,{{ chart }}" alt="Stock Chart">-->
-    <h1>{{ chart }}</h1>
+    <img src="{{ chart }}" alt="Stock Chart">
     {% endif %}
 </body>
 </html>

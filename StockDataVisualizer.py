@@ -1,4 +1,5 @@
 import requests
+import csv
 from Graphs import bar_graph, line_graph
 from dotenv import load_dotenv
 import os
@@ -86,6 +87,14 @@ print('-------Stock Data Visualizer-------')
 
 @app.route('/', methods=["GET", "POST"])
 def index():
+    companies = []
+    with open('stocks.csv', newline='') as csvfile:
+        csvreader = csv.reader(csvfile)
+        next(csvreader)
+        for row in csvreader:
+            symbol, name, sector = row
+            companies.append({'symbol': symbol, 'name': name, 'sector': sector})
+
     chart = None
     if request.method == "POST":
         #get values from user input
@@ -96,17 +105,16 @@ def index():
         endDate = request.form["end_date"]
         try:
             #get the graph for either bar or line graph
-            #data = stock_data(stockSymbol, timeSeries, startDate, endDate)
+            data = stock_data(stockSymbol, timeSeries, startDate, endDate)
             if chartType == '1':
                 title = f"Stock Data for {stockSymbol}: {startDate} to {endDate}"
-                #bar_graph(title, data['dates'], data['open'], data['high'], data['low'], data['close'])
-                chart = title
+                chart = bar_graph(title, data['dates'], data['open'], data['high'], data['low'], data['close'])
             elif chartType == '2':
+                chart = data
                 title = f"Stock Data for {stockSymbol}: {startDate} to {endDate}"
-                #line_graph(title, data['dates'], data['open'], data['high'], data['low'], data['close'])
-                chart = title
+                chart = line_graph(title, data['dates'], data['open'], data['high'], data['low'], data['close'])
         except ValueError as e:
             chart = None
             print("Error fetching data:", e)
     #return index html with the chart
-    return render_template("index.html", chart=chart)
+    return render_template("index.html", chart=chart, companies=companies)

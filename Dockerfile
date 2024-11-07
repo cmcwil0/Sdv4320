@@ -9,3 +9,7 @@ RUN pip install -r requirements.txt
 EXPOSE 5000
 COPY . .
 CMD ["flask", "run", "--debug"]
+
+#---------------------------------------------------
+#run container by running 'docker compose up --build'
+#---------------------------------------------------
